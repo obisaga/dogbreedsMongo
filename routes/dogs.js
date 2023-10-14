@@ -58,7 +58,7 @@ dogsRouter.get("/name/:breedName", async (req, res, next) => {
 
 
 //get a dog by id
-dogsRouter.get("/id/:id", async (req,res) => {
+dogsRouter.get("/id/:id", async (req,res, next) => {
     try {
         const {id} = req.params
         const response = await Dog.findById({_id: id})
