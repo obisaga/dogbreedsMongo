@@ -48,7 +48,7 @@ dogsRouter.get("/id/:id", async (req,res) => {
         // console.log(response)
 
         if(!id){
-            return res.status(404).json({message: "Dog not found"})
+            return res.status(404).json({message: "Id not found"})
         }
 
         res.status(201).json(response)
@@ -75,7 +75,7 @@ dogsRouter.delete("/:breedName", async (req, res) => {
         const {breedName} = req.params
         const response = await Dog.deleteOne(breedName)
 
-        if(!result){
+        if(!response){
             res.status(404).json({message: "Dog not found"})
         }
         res.status(201).json(response)
