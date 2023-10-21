@@ -34,16 +34,16 @@ authRouter.post("/login", async (req, res) => {
         //check if the user exists in db
         const user = await User.findOne({username});
         if(!user){
-            return res.status(400).send('Invalid credentials');
+            return res.status(400).json({message: "Invalid credentials"});
         }
         //Compare passwords
         const validPassword = await bcrypt.compare(password, user.password)
         if(!validPassword){
-            return res.status(400).send('Invalid credentials');
+            return res.status(400).json({message: "Invalid credentials"});
         }
-        res.send(`Login for ${username} successful`) 
+        res.json({message: "Success"}) 
     } catch (error) {
-        res.status(401).json({message: "Invalid entry"})
+        res.status(401).json({message: "Invalid credentials"})
     }
 });
 
