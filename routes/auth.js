@@ -5,6 +5,8 @@ import jwt from "jsonwebtoken"
 
 const authRouter = express.Router();
 
+// const secret = process.env.SECRET;
+
 
 const generateToken = (data) => {
     return jwt.sign(data, secret, {expiresIn: '1800s'})
@@ -28,6 +30,7 @@ authRouter.post("/register", async (req, res) => {
 authRouter.post("/login", async (req, res) => {
     try {
         const {username, password, email} = req.body;
+        //check if the user exists in db
         const user = await User.findOne({username});
         if(!user){
             return res.status(400).send('Invalid credentials');
@@ -37,15 +40,17 @@ authRouter.post("/login", async (req, res) => {
         if(!validPassword){
             return res.status(400).send('Invalid credentials');
         }
-        const token = generateToken({username: user.username});
-        console.log(token)
-        
-        if(!token){
-            res.redirect("/register")
-            }
 
-        res.set("token", token)
-        res.set("Access-Control-Expose-Headers", "token");
+        res.json(`Login for ${username} successful`)
+        // const token = generateToken({username: user.username});
+        // console.log(token)
+        
+        // if(!token){
+        //     res.redirect("/register")
+        //     }
+
+        // res.set("token", token)
+        // res.set("Access-Control-Expose-Headers", "token");
         
     } catch (error) {
         res.status(401).json({message: "Invalid entry"})
