@@ -29,7 +29,8 @@ authRouter.post("/register", async (req, res) => {
 
 authRouter.post("/login", async (req, res) => {
     try {
-        const {username, password, email} = req.body;
+        console.log(req.body)
+        const {username, password} = req.body;
         //check if the user exists in db
         const user = await User.findOne({username});
         if(!user){
@@ -40,30 +41,10 @@ authRouter.post("/login", async (req, res) => {
         if(!validPassword){
             return res.status(400).send('Invalid credentials');
         }
-
-        res.json(`Login for ${username} successful`)
-        // const token = generateToken({username: user.username});
-        // console.log(token)
-        
-        // if(!token){
-        //     res.redirect("/register")
-        //     }
-
-        // res.set("token", token)
-        // res.set("Access-Control-Expose-Headers", "token");
-        
+        res.send(`Login for ${username} successful`) 
     } catch (error) {
         res.status(401).json({message: "Invalid entry"})
     }
 });
-
-
-
-      
-
-
-
-
-
 
 export default authRouter;
