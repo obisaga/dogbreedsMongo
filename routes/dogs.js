@@ -1,7 +1,11 @@
 import express from "express";
 import Dog from "../models/Dog.js";
+import User from "../models/User.js";
+import jwt from "jsonwebtoken"
 
 const dogsRouter = express.Router()
+const secret = process.env.SECRET;
+// const dogs = User
 
 
 //error handling
@@ -9,6 +13,23 @@ const errorHandler = (err, req, res, next) => {
     const statusCode = err.statusCode || 500;
     const statusMessage = err.message || "Internal server error";
     res.status(statusCode).json({error: statusMessage})
+}
+
+  //authentication middleware
+  const auth = (req, res, next) => {
+    const {token} = req.headers
+    
+    if(!token){
+        return res.sendStatus(401)
+    }
+
+    jwt.verify(token, secret, (err, dogs) => {
+        if(err){
+            return res.sendStatus(401)
+        }
+        req.user = dogs  // NOT HOW IT IS SUPPOSED TO BE  ???
+        next()
+    })
 }
 
 // dogsRouter.use(errorHandler)
@@ -29,7 +50,7 @@ dogsRouter.post("/", async (req, res, next) => {
 
 
 //get all dogs
-dogsRouter.get("/", async (req, res, next) => {
+dogsRouter.get("/",  auth, async (req, res, next) => {
     try {
         const response = await Dog.find()
         res.status(200).json(response)
@@ -58,7 +79,7 @@ dogsRouter.get("/name/:breedName", async (req, res, next) => {
 
 
 //get a dog by id
-dogsRouter.get("/id/:id", async (req,res, next) => {
+dogsRouter.get("/id/:id", auth, async (req,res, next) => {
     try {
         const {id} = req.params
         const response = await Dog.findById({_id: id})

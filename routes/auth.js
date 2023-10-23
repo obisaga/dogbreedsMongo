@@ -5,22 +5,32 @@ import jwt from "jsonwebtoken"
 
 const authRouter = express.Router();
 
-// const secret = process.env.SECRET;
+const secret = process.env.SECRET;
 
 
 const generateToken = (data) => {
     return jwt.sign(data, secret, {expiresIn: '1800s'})
   }
-  
+
 
 authRouter.post("/register", async (req, res) => {
     try {
-        const {username, password, email} = req.body;
-        //  Hash the password before saving to DB
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const response = await User.create({username, password:hashedPassword, email})
-        res.status(201).json(response) 
-        
+      const { username, password, email } = req.body;
+
+      //check if the user exists in the database
+    const userExists = await User.findOne({username})
+    if(userExists){
+    res.redirect("/login")
+    }
+
+      //  Hash the password before saving to DB
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const response = await User.create({
+        username,
+        password: hashedPassword,
+        email,
+      });
+      res.status(201).json(response);
     } catch (error) {
         res.status(401).json({message: "Invalid entry"})
     }
@@ -29,19 +39,28 @@ authRouter.post("/register", async (req, res) => {
 
 authRouter.post("/login", async (req, res) => {
     try {
-        console.log(req.body)
-        const {username, password} = req.body;
-        //check if the user exists in db
-        const user = await User.findOne({username});
-        if(!user){
-            return res.status(400).json({message: "Invalid credentials"});
-        }
-        //Compare passwords
-        const validPassword = await bcrypt.compare(password, user.password)
-        if(!validPassword){
-            return res.status(400).json({message: "Invalid credentials"});
-        }
-        res.json({message: "Success"}) 
+      console.log(req.body);
+      const { username, password } = req.body;
+
+      //check if the user exists in db
+      const user = await User.findOne({ username });
+      if (!user) {
+        return res.status(400).json({ message: "Invalid credentials" });
+      }
+
+      //Compare passwords
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword) {
+        return res.status(400).json({ message: "Invalid credentials" });
+      }
+
+      //generate token
+      const token = generateToken({ username: user.username });
+
+      res.set("token", token);
+    //   res.set("Access-Control-Expose-Headers", "token");
+
+      res.json({ token });
     } catch (error) {
         res.status(401).json({message: "Invalid credentials"})
     }
