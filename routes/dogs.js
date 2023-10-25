@@ -5,8 +5,6 @@ import jwt from "jsonwebtoken"
 
 const dogsRouter = express.Router()
 const secret = process.env.SECRET;
-// const dogs = User
-
 
 //error handling
 const errorHandler = (err, req, res, next) => {
@@ -17,22 +15,22 @@ const errorHandler = (err, req, res, next) => {
 
   //authentication middleware
   const auth = (req, res, next) => {
-    const {token} = req.headers
+    const token = req.headers.authorization
+    console.log(token)
     
     if(!token){
         return res.sendStatus(401)
     }
+    // const tokenData = token.split(' ')[1];
 
-    jwt.verify(token, secret, (err, dogs) => {
+    jwt.verify(token, secret, (err, user) => {
         if(err){
             return res.sendStatus(401)
         }
-        req.user = dogs  // NOT HOW IT IS SUPPOSED TO BE  ???
+        req.user = user  
         next()
     })
 }
-
-// dogsRouter.use(errorHandler)
 
 
 //create a new dog
@@ -49,14 +47,17 @@ dogsRouter.post("/", async (req, res, next) => {
 }, errorHandler)
 
 
+
 //get all dogs
-dogsRouter.get("/",  auth, async (req, res, next) => {
+dogsRouter.get("/", async (req, res, next) => {
     try {
         const response = await Dog.find()
         res.status(200).json(response)
-    } catch (error) {
-        next()
+    } catch(err) {
+        res.status(500).json(err)
+        
     }
+    next()
 }, errorHandler)
 
 
@@ -79,7 +80,7 @@ dogsRouter.get("/name/:breedName", async (req, res, next) => {
 
 
 //get a dog by id
-dogsRouter.get("/id/:id", auth, async (req,res, next) => {
+dogsRouter.get("/id/:id", async (req,res, next) => {
     try {
         const {id} = req.params
         const response = await Dog.findById({_id: id})

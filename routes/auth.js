@@ -13,14 +13,14 @@ const generateToken = (data) => {
   }
 
 
-authRouter.post("/register", async (req, res) => {
+authRouter.post("/dogbreeds/register", async (req, res) => {
     try {
       const { username, password, email } = req.body;
 
       //check if the user exists in the database
     const userExists = await User.findOne({username})
     if(userExists){
-    res.redirect("/login")
+    return res.status(400).json({ message: "User already exists" })
     }
 
       //  Hash the password before saving to DB
@@ -37,7 +37,7 @@ authRouter.post("/register", async (req, res) => {
 });
 
 
-authRouter.post("/login", async (req, res) => {
+authRouter.post("/dogbreeds/login", async (req, res) => {
     try {
       console.log(req.body);
       const { username, password } = req.body;
@@ -58,7 +58,7 @@ authRouter.post("/login", async (req, res) => {
       const token = generateToken({ username: user.username });
 
       res.set("token", token);
-    //   res.set("Access-Control-Expose-Headers", "token");
+      res.set("Access-Control-Expose-Headers", "token");
 
       res.json({ token });
     } catch (error) {
