@@ -9,5 +9,7 @@ Backend for the Dog Breeds Website
 ![image](https://github.com/obisaga/dogbreedsMongo/assets/134201947/25fb78b2-9d05-4a17-ba0d-f827be3cc389)
 
 ![image](https://github.com/obisaga/dogbreedsMongo/assets/134201947/d6651086-201f-4fb7-87c4-5c30508159c3)
+![image](https://github.com/obisaga/dogbreedsMongo/assets/134201947/b6c3e5f3-571c-4d1e-8851-ffcf41d7545b)
+
 
 ![image](https://github.com/obisaga/dogbreedsMongo/assets/134201947/62a94253-782e-45de-b494-41cbaa9c3579)
